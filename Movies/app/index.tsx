@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
+import { Asset } from 'expo-asset';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -15,6 +16,7 @@ export default function App() {
       try {
         // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync(Ionicons.font);
+        await Asset.loadAsync(require("../assets/images/cherry.png"));
         //글씨 폰트 직접 assets 폴더에 업로드해서 하는 것
         // await Font.loadAsync({
         //   'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
