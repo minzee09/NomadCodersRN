@@ -1,6 +1,6 @@
 {
-    "cSpell.words": [
-        "Entypo",
-        "Ionicons"
-    ]
+  "cSpell.words": ["Entypo", "Ionicons"],
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
