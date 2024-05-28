@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import Entypo from '@expo/vector-icons/Entypo';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 
@@ -14,7 +14,12 @@ export default function App() {
     async function prepare() {
       try {
         // Pre-load fonts, make any API calls you need to do here
-        await Font.loadAsync(Entypo.font);
+        await Font.loadAsync(Ionicons.font);
+        //글씨 폰트 직접 assets 폴더에 업로드해서 하는 것
+        // await Font.loadAsync({
+        //   'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+        // });
+
         // Artificially delay for two seconds to simulate a slow loading
         // experience. Please remove this if you copy and paste the code!
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -49,7 +54,7 @@ export default function App() {
       style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
       onLayout={onLayoutRootView}>
       <Text>SplashScreen Demo! 👋</Text>
-      <Entypo name="rocket" size={30} />
+      <Ionicons name="rocket" size={30} />
     </View>
   );
 }
