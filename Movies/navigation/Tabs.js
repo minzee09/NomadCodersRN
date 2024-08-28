@@ -6,6 +6,7 @@ import Tv from '../screens/Tv.js';
 import { useColorScheme } from 'react-native';
 import { BLACK_COLOR, DARK_GREY, LIGHT_GREY, YELLOW_COLOR } from '../colors';
 import Ionicons from '@expo/vector-icons/Ionicons.js';
+import Stack from './Stack.js';
 
 const Tab = createBottomTabNavigator();
 
