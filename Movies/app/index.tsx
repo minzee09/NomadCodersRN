@@ -12,6 +12,8 @@ import {
 import Tabs from '../navigation/Tabs';
 import Stack from '../navigation/Stack';
 import Root from '../navigation/Root';
+import { ThemeProvider } from 'styled-components/native';
+import { darkTheme, lightTheme } from '../styled';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -57,11 +59,13 @@ export default function App() {
   }
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      {/* BUG 중첩 오류로 인해 independent 추가하였으나 실제 플젝에서 사용 지양 */}
-      <NavigationContainer independent={true}>
-        <Root />
-      </NavigationContainer>
-    </View>
+    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+        {/* BUG 중첩 오류로 인해 independent 추가하였으나 실제 플젝에서 사용 지양 */}
+        <NavigationContainer independent={true}>
+          <Root />
+        </NavigationContainer>
+      </View>
+    </ThemeProvider>
   );
 }
