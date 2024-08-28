@@ -56,10 +56,6 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      {/* 
-      <NavigationContainer
-        theme={isDark ? DarkTheme : DefaultTheme}
-      > */}
       {/* BUG 중첩 오류로 인해 independent 추가하였으나 실제 플젝에서 사용 지양 */}
       <NavigationContainer independent={true}>
         <Tabs />
