@@ -1,10 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { useColorScheme, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  DarkTheme,
+  DefaultTheme,
+} from '@react-navigation/native';
 import Tabs from '../navigation/Tabs';
 
 // Keep the splash screen visible while we fetch resources
@@ -12,6 +16,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+  const isDark = useColorScheme() === 'dark';
 
   useEffect(() => {
     async function prepare() {
@@ -51,7 +56,14 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <Tabs />
+      {/* 
+      <NavigationContainer
+        theme={isDark ? DarkTheme : DefaultTheme}
+      > */}
+      {/* BUG 중첩 오류로 인해 independent 추가하였으나 실제 플젝에서 사용 지양 */}
+      <NavigationContainer independent={true}>
+        <Tabs />
+      </NavigationContainer>
     </View>
   );
 }
