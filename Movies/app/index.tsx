@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
+import { NavigationContainer } from '@react-navigation/native';
+import Tabs from '../navigation/Tabs';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -16,7 +18,7 @@ export default function App() {
       try {
         // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync(Ionicons.font);
-        await Asset.loadAsync(require("../assets/images/cherry.png"));
+        await Asset.loadAsync(require('../assets/images/cherry.png'));
         //글씨 폰트 직접 assets 폴더에 업로드해서 하는 것
         // await Font.loadAsync({
         //   'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
@@ -24,7 +26,7 @@ export default function App() {
 
         // Artificially delay for two seconds to simulate a slow loading
         // experience. Please remove this if you copy and paste the code!
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       } catch (e) {
         console.warn(e);
       } finally {
@@ -38,11 +40,7 @@ export default function App() {
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
+      // Hide the splash screen once the app is ready and the layout has been performed.
       await SplashScreen.hideAsync();
     }
   }, [appIsReady]);
@@ -52,11 +50,8 @@ export default function App() {
   }
 
   return (
-    <View
-      style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-      onLayout={onLayoutRootView}>
-      <Text>SplashScreen Demo! 👋</Text>
-      <Ionicons name="rocket" size={30} />
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <Tabs />
     </View>
   );
 }
