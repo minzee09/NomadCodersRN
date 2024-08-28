@@ -10,6 +10,7 @@ import {
   DefaultTheme,
 } from '@react-navigation/native';
 import Tabs from '../navigation/Tabs';
+import Stack from '../navigation/Stack';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -58,7 +59,7 @@ export default function App() {
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       {/* BUG 중첩 오류로 인해 independent 추가하였으나 실제 플젝에서 사용 지양 */}
       <NavigationContainer independent={true}>
-        <Tabs />
+        <Stack />
       </NavigationContainer>
     </View>
   );
