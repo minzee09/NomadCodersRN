@@ -14,6 +14,10 @@ export default function Tabs() {
   const isDark = useColorScheme() === 'dark';
   return (
     <Tab.Navigator
+      sceneContainerStyle={{
+        // 모든 화면을 담고 있는 컨테이너
+        backgroundColor: isDark ? BLACK_COLOR : 'white',
+      }}
       screenOptions={{
         tabBarStyle: {
           backgroundColor: isDark ? BLACK_COLOR : 'white',
