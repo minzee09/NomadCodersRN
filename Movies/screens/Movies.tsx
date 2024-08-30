@@ -1,10 +1,18 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, RefreshControl } from 'react-native'; //Dimensions => 화면의 사이즈 가져다 줌
+import {
+  ActivityIndicator,
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+} from 'react-native'; //Dimensions => 화면의 사이즈 가져다 줌
 import Swiper from 'react-native-web-swiper';
 import styled from 'styled-components/native';
 import Slide from '@/components/Slide';
 import Poster from '@/components/Poster';
+import HMedia from '@/components/HMedia';
+import Votes from '@/components/Votes';
+import VMedia from '@/components/VMedia';
 
 const options = {
   method: 'GET',
@@ -122,38 +130,28 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
           contentContainerStyle={{ paddingLeft: 32 }}
         >
           {trending.map((movie) => (
-            <Movie key={movie.id}>
-              <Poster path={movie.poster_path} />
-              <Title>
-                {movie.original_title.slice(0, 12)}
-                {movie.original_title.length > 12 ? '...' : null}
-              </Title>
-              <Votes>⭐ {movie.vote_average.toFixed(1)}/10</Votes>
-            </Movie>
+            <VMedia
+              key={movie.id}
+              posterPath={movie.poster_path}
+              originalTitle={movie.original_title}
+              voteAverage={movie.vote_average}
+            />
           ))}
         </TrendingScroll>
       </ListContainer>
       <ComingSoonTitle>Coming Soon</ComingSoonTitle>
       {upcoming.map((movie) => (
-        <HMovie key={movie.id}>
-          <Poster path={movie.poster_path} />
-          <HColumn>
-            <Title>{movie.original_title}</Title>
-            <Release>
-              {new Date(movie.release_date).toLocaleDateString('ko', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-              })}
-            </Release>
-            <Overview>{movie.overview.slice(0, 100)}...</Overview>
-          </HColumn>
-        </HMovie>
+        <HMedia
+          key={movie.id}
+          posterPath={movie.poster_path}
+          originalTitle={movie.original_title}
+          releaseDate={movie.release_date}
+          overview={movie.overview}
+        />
       ))}
     </ScrollView>
   );
 };
-const ScrollView = styled.ScrollView``;
 
 const Loader = styled.View`
   flex: 1;
@@ -174,45 +172,6 @@ const ListTitle = styled.Text`
 
 const TrendingScroll = styled.ScrollView`
   margin-top: 20px;
-`;
-
-const Movie = styled.View`
-  margin-right: 20px;
-  align-items: center;
-`;
-
-const Title = styled.Text`
-  font-weight: 600;
-  color: white;
-  margin: 8px 0 4px 0;
-`;
-
-const Votes = styled.Text`
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.8);
-`;
-
-const HMovie = styled.View`
-  padding: 0 32px;
-  margin-bottom: 16px;
-  flex-direction: row;
-`;
-
-const HColumn = styled.View`
-  margin-left: 16px;
-  width: 80%;
-`;
-
-const Overview = styled.Text`
-  margin-top: 8px;
-  color: rgba(255, 255, 255, 0.8);
-  width: 80%;
-`;
-
-const Release = styled.Text`
-  color: white;
-  font-size: 12px;
-  margin: 8px 0;
 `;
 
 const ComingSoonTitle = styled(ListTitle)`

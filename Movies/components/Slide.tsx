@@ -4,6 +4,7 @@ import React from 'react';
 import { StyleSheet, useColorScheme, View } from 'react-native';
 import styled from 'styled-components/native';
 import Poster from './Poster';
+import Votes from './Votes';
 
 interface SlideProps {
   backdropPath: string;
@@ -38,7 +39,7 @@ const Slide: React.FC<SlideProps> = ({
           <Poster path={posterPath} />
           <Column>
             <Title>{originalTitle}</Title>
-            <Votes>⭐ {voteAverage.toFixed(1)}/10</Votes>
+            <Votes voteAverage={voteAverage} />
             <Overview>{overview.slice(0, 100)}...</Overview>
           </Column>
         </Wrapper>
@@ -57,9 +58,6 @@ const Title = styled.Text`
 const Overview = styled.Text`
   margin-top: 8px;
   color: rgba(255, 255, 255, 0.8);
-`;
-const Votes = styled(Overview)`
-  font-size: 12px;
 `;
 const Wrapper = styled.View`
   flex-direction: row;
