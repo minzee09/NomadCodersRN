@@ -7,7 +7,7 @@ import Slide from '@/components/Slide';
 import HMedia from '@/components/HMedia';
 import VMedia from '@/components/VMedia';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { moviesApi } from '@/api';
+import { Movie, MovieResponse, moviesApi } from '@/api';
 
 //동일하지만 아래 형식을 더 선호 => const SCREEN_HEIGHT = Dimensions.get("window").height;
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -17,27 +17,26 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   const {
     isLoading: nowPlayingLoading,
     data: nowPlayingData,
-
     isRefetching: isRefetchingNowPlaying,
-  } = useQuery({
+  } = useQuery<MovieResponse>({
     queryKey: ['movies', 'nowPlaying'],
     queryFn: moviesApi.nowPlaying,
   });
+
   const {
     isLoading: trendingLoading,
     data: trendingData,
-
     isRefetching: isRefetchingTrending,
-  } = useQuery({
+  } = useQuery<MovieResponse>({
     queryKey: ['movies', 'trending'],
     queryFn: moviesApi.trending,
   });
+
   const {
     isLoading: upcomingLoading,
     data: upcomingData,
-
     isRefetching: isRefetchingUpcoming,
-  } = useQuery({
+  } = useQuery<MovieResponse>({
     queryKey: ['movies', 'upcoming'],
     queryFn: moviesApi.upcoming,
   });
@@ -46,7 +45,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
     await queryClient.refetchQueries({ queryKey: ['movies'] }); //movies 키를 가진 (즉 포함된) 쿼리들을 전부 refetch == 3개 모두 가져옴
   };
 
-  const renderVMedia = ({ item }) => (
+  const renderVMedia = ({ item }: { item: Movie }) => (
     <VMedia
       posterPath={item.poster_path}
       originalTitle={item.original_title}
@@ -54,7 +53,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
     />
   );
 
-  const renderHMedia = ({ item }) => (
+  const renderHMedia = ({ item }: { item: Movie }) => (
     <HMedia
       posterPath={item.poster_path}
       originalTitle={item.original_title}
@@ -63,17 +62,26 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
     />
   );
 
-  const movieKeyExtractor = (item) => item.id + '';
+  const movieKeyExtractor = (item: Movie) => item.id + '';
 
   const loading = nowPlayingLoading || trendingLoading || upcomingLoading;
   const refreshing =
     isRefetchingNowPlaying || isRefetchingTrending || isRefetchingUpcoming;
 
+  //인터페이스 작성 위해
+  // if (nowPlayingData) {
+  //   console.log(
+  //     Object.entries(nowPlayingData[0])
+  //       .map((a) => `${a[0]}:${typeof a[1]};`)
+  //       .join('\r\n'),
+  //   );
+  // }
+
   return loading ? (
     <Loader>
       <ActivityIndicator />
     </Loader>
-  ) : (
+  ) : upcomingData ? (
     <FlatList
       refreshing={refreshing}
       onRefresh={onRefresh}
@@ -90,7 +98,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
               height: SCREEN_HEIGHT / 4,
             }}
           >
-            {nowPlayingData.map((movie) => (
+            {nowPlayingData?.map((movie: Movie) => (
               <Slide
                 key={movie.id}
                 backdropPath={movie.backdrop_path}
@@ -103,27 +111,27 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
           </Swiper>
           <ListContainer>
             <ListTitle>Trending Movies</ListTitle>
-            <TrendingScroll
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 30 }}
-              data={trendingData}
-              keyExtractor={movieKeyExtractor}
-              ItemSeparatorComponent={VSeparator}
-              renderItem={renderVMedia}
-            />
+            {trendingData ? (
+              <TrendingScroll
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 30 }}
+                data={trendingData}
+                keyExtractor={movieKeyExtractor}
+                ItemSeparatorComponent={VSeparator}
+                renderItem={renderVMedia}
+              />
+            ) : null}
           </ListContainer>
           <ComingSoonTitle>Coming Soon</ComingSoonTitle>
-          <FlatList
-            ItemSeparatorComponent={HSeparator}
-            keyExtractor={movieKeyExtractor}
-            data={upcomingData}
-            renderItem={renderHMedia}
-          />
         </>
       }
+      ItemSeparatorComponent={HSeparator}
+      keyExtractor={movieKeyExtractor}
+      data={upcomingData}
+      renderItem={renderHMedia}
     />
-  );
+  ) : null;
 };
 
 const Loader = styled.View`
