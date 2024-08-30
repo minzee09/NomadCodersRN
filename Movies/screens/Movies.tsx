@@ -8,12 +8,15 @@ import HMedia from '@/components/HMedia';
 import VMedia from '@/components/VMedia';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Movie, MovieResponse, moviesApi } from '@/api';
+import Loader from '@/components/Loader';
+import HList from '@/components/HList';
 
 //동일하지만 아래 형식을 더 선호 => const SCREEN_HEIGHT = Dimensions.get("window").height;
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   const queryClient = useQueryClient();
+  const [refresh, setRefresh] = useState(false);
   const {
     isLoading: nowPlayingLoading,
     data: nowPlayingData,
@@ -42,16 +45,10 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   });
 
   const onRefresh = async () => {
-    await queryClient.refetchQueries({ queryKey: ['movies'] }); //movies 키를 가진 (즉 포함된) 쿼리들을 전부 refetch == 3개 모두 가져옴
+    setRefresh(true);
+    await queryClient.refetchQueries({ queryKey: ['tv'] });
+    setRefresh(false);
   };
-
-  const renderVMedia = ({ item }: { item: Movie }) => (
-    <VMedia
-      posterPath={item.poster_path}
-      originalTitle={item.original_title}
-      voteAverage={item.vote_average}
-    />
-  );
 
   const renderHMedia = ({ item }: { item: Movie }) => (
     <HMedia
@@ -65,8 +62,6 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   const movieKeyExtractor = (item: Movie) => item.id + '';
 
   const loading = nowPlayingLoading || trendingLoading || upcomingLoading;
-  const refreshing =
-    isRefetchingNowPlaying || isRefetchingTrending || isRefetchingUpcoming;
 
   //인터페이스 작성 위해
   // if (nowPlayingData) {
@@ -78,12 +73,10 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   // }
 
   return loading ? (
-    <Loader>
-      <ActivityIndicator />
-    </Loader>
+    <Loader />
   ) : upcomingData ? (
     <FlatList
-      refreshing={refreshing}
+      refreshing={refresh}
       onRefresh={onRefresh}
       ListHeaderComponent={
         //모든 FlatList들을 랜더링하는 역할 | 하지만 리스트의 헤더 역할도 가능함
@@ -109,20 +102,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
               />
             ))}
           </Swiper>
-          <ListContainer>
-            <ListTitle>Trending Movies</ListTitle>
-            {trendingData ? (
-              <TrendingScroll
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 30 }}
-                data={trendingData}
-                keyExtractor={movieKeyExtractor}
-                ItemSeparatorComponent={VSeparator}
-                renderItem={renderVMedia}
-              />
-            ) : null}
-          </ListContainer>
+          <HList title="Trending Movies" data={trendingData} />
           <ComingSoonTitle>Coming Soon</ComingSoonTitle>
         </>
       }
@@ -133,12 +113,6 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
     />
   ) : null;
 };
-
-const Loader = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-`;
 
 const ListContainer = styled.View`
   margin-bottom: 40px;
