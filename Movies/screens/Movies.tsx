@@ -6,45 +6,44 @@ import styled from 'styled-components/native';
 import Slide from '@/components/Slide';
 import HMedia from '@/components/HMedia';
 import VMedia from '@/components/VMedia';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { moviesApi } from '@/api';
 
 //동일하지만 아래 형식을 더 선호 => const SCREEN_HEIGHT = Dimensions.get("window").height;
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
+  const queryClient = useQueryClient();
   const {
     isLoading: nowPlayingLoading,
     data: nowPlayingData,
-    refetch: refetchNowPlaying,
+
     isRefetching: isRefetchingNowPlaying,
   } = useQuery({
-    queryKey: ['nowPlaying'],
+    queryKey: ['movies', 'nowPlaying'],
     queryFn: moviesApi.nowPlaying,
   });
   const {
     isLoading: trendingLoading,
     data: trendingData,
-    refetch: refetchTrending,
+
     isRefetching: isRefetchingTrending,
   } = useQuery({
-    queryKey: ['trending'],
+    queryKey: ['movies', 'trending'],
     queryFn: moviesApi.trending,
   });
   const {
     isLoading: upcomingLoading,
     data: upcomingData,
-    refetch: refetchUpcoming,
+
     isRefetching: isRefetchingUpcoming,
   } = useQuery({
-    queryKey: ['upcoming'],
+    queryKey: ['movies', 'upcoming'],
     queryFn: moviesApi.upcoming,
   });
 
   const onRefresh = async () => {
-    refetchNowPlaying();
-    refetchTrending();
-    refetchUpcoming();
+    await queryClient.refetchQueries({ queryKey: ['movies'] }); //movies 키를 가진 (즉 포함된) 쿼리들을 전부 refetch == 3개 모두 가져옴
   };
 
   const renderVMedia = ({ item }) => (
