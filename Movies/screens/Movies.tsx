@@ -91,6 +91,25 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
     setRefreshing(false);
   };
 
+  const renderVMedia = ({ item }) => (
+    <VMedia
+      posterPath={item.poster_path}
+      originalTitle={item.original_title}
+      voteAverage={item.vote_average}
+    />
+  );
+
+  const renderHMedia = ({ item }) => (
+    <HMedia
+      posterPath={item.poster_path}
+      originalTitle={item.original_title}
+      releaseDate={item.release_date}
+      overview={item.overview}
+    />
+  );
+
+  const movieKeyExtractor = (item) => item.id + '';
+
   return loading ? (
     <Loader>
       <ActivityIndicator />
@@ -130,36 +149,17 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 30 }}
               data={trending}
-              keyExtractor={(item) => item.id + ''} // number에서 string으로 변환
-              ItemSeparatorComponent={() => (
-                //마지막 요소 빼고 적용함
-                <View style={{ width: 20 }} />
-              )}
-              renderItem={({ item }) => (
-                <VMedia
-                  posterPath={item.poster_path}
-                  originalTitle={item.original_title}
-                  voteAverage={item.vote_average}
-                />
-              )}
+              keyExtractor={movieKeyExtractor}
+              ItemSeparatorComponent={VSeparator}
+              renderItem={renderVMedia}
             />
           </ListContainer>
           <ComingSoonTitle>Coming Soon</ComingSoonTitle>
           <FlatList
-            ItemSeparatorComponent={() => (
-              //마지막 요소 빼고 적용함
-              <View style={{ height: 20 }} />
-            )}
-            keyExtractor={(item) => item.id + ''}
+            ItemSeparatorComponent={HSeparator}
+            keyExtractor={movieKeyExtractor}
             data={upcoming}
-            renderItem={({ item }) => (
-              <HMedia
-                posterPath={item.poster_path}
-                originalTitle={item.original_title}
-                releaseDate={item.release_date}
-                overview={item.overview}
-              />
-            )}
+            renderItem={renderHMedia}
           />
         </>
       }
@@ -190,6 +190,14 @@ const TrendingScroll = styled.FlatList`
 
 const ComingSoonTitle = styled(ListTitle)`
   margin-bottom: 20px;
+`;
+
+const VSeparator = styled.View`
+  width: 20px;
+`;
+
+const HSeparator = styled.View`
+  width: 20px;
 `;
 
 export default Movies;
