@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Search from '../screens/Search';
 import Movies from '../screens/Movies';
-import Tv from '../screens/Tv.js';
+import Tv from '../screens/Tv';
 import { useColorScheme } from 'react-native';
 import { BLACK_COLOR, DARK_GREY, LIGHT_GREY, YELLOW_COLOR } from '../colors';
 import Ionicons from '@expo/vector-icons/Ionicons.js';
