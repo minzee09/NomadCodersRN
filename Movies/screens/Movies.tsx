@@ -3,8 +3,11 @@ import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
+  FlatList,
   RefreshControl,
   ScrollView,
+  View,
+  Text,
 } from 'react-native'; //Dimensions => 화면의 사이즈 가져다 줌
 import Swiper from 'react-native-web-swiper';
 import styled from 'styled-components/native';
@@ -125,17 +128,21 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
         <TrendingScroll
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingLeft: 32 }}
-        >
-          {trending.map((movie) => (
+          contentContainerStyle={{ paddingHorizontal: 30 }}
+          data={trending}
+          keyExtractor={(item) => item.id + ''} // number에서 string으로 변환
+          ItemSeparatorComponent={() => (
+            //마지막 요소 빼고 적용함
+            <View style={{ width: 20 }} />
+          )}
+          renderItem={({ item }) => (
             <VMedia
-              key={movie.id}
-              posterPath={movie.poster_path}
-              originalTitle={movie.original_title}
-              voteAverage={movie.vote_average}
+              posterPath={item.poster_path}
+              originalTitle={item.original_title}
+              voteAverage={item.vote_average}
             />
-          ))}
-        </TrendingScroll>
+          )}
+        />
       </ListContainer>
       <ComingSoonTitle>Coming Soon</ComingSoonTitle>
       {upcoming.map((movie) => (
@@ -168,7 +175,7 @@ const ListTitle = styled.Text`
   margin-left: 32px;
 `;
 
-const TrendingScroll = styled.ScrollView`
+const TrendingScroll = styled.FlatList`
   margin-top: 20px;
 `;
 
