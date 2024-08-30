@@ -1,95 +1,33 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  View,
-  Text,
-} from 'react-native'; //Dimensions => 화면의 사이즈 가져다 줌
+import { ActivityIndicator, Dimensions, FlatList } from 'react-native'; //Dimensions => 화면의 사이즈 가져다 줌
 import Swiper from 'react-native-web-swiper';
 import styled from 'styled-components/native';
 import Slide from '@/components/Slide';
 import HMedia from '@/components/HMedia';
 import VMedia from '@/components/VMedia';
-
-const options = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2MGMxNmU3ZWY4YTI1OWIxYjU1ZjRhYzg4N2ExZGNjMyIsIm5iZiI6MTcyNDk1MDExMS4yMjM4ODUsInN1YiI6IjY2ZDBhNThmYzcxYjc1YzllZDcwNTA0YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.EmIS_RtXfhDrxNOst7i-7qg080J2F2Qn6PKMJFw89UQ',
-  },
-};
+import { useQuery } from '@tanstack/react-query';
+import { moviesApi } from '@/api';
 
 //동일하지만 아래 형식을 더 선호 => const SCREEN_HEIGHT = Dimensions.get("window").height;
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [trending, setTrending] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
-  const [nowPlaying, setNowPlaying] = useState([]);
+  const { isLoading: nowPlayingLoading, data: nowPlayingData } = useQuery({
+    queryKey: ['nowPlaying'],
+    queryFn: moviesApi.nowPlaying,
+  });
+  const { isLoading: trendingLoading, data: trendingData } = useQuery({
+    queryKey: ['trending'],
+    queryFn: moviesApi.trending,
+  });
+  const { isLoading: upcomingLoading, data: upcomingData } = useQuery({
+    queryKey: ['upcoming'],
+    queryFn: moviesApi.upcoming,
+  });
 
-  const getTrending = async () => {
-    const response = await fetch(
-      'https://api.themoviedb.org/3/trending/movie/week?language=en-US',
-      options,
-    );
-    const data = await response.json();
-    const results = data.results.filter(
-      (movie) => !movie.genre_ids.includes(27),
-    ); // 호러 장르 제외
-    console.log(results); // 결과 출력
-
-    setTrending(results); // results를 상태에 저장
-  };
-
-  const getUpcoming = async () => {
-    const response = await fetch(
-      'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1&region=KR',
-      options,
-    );
-    const data = await response.json();
-    const results = data.results.filter(
-      (movie) => !movie.genre_ids.includes(27),
-    ); // 호러 장르 제외
-    console.log(results); // 결과 출력
-
-    setUpcoming(results); // results를 상태에 저장
-  };
-
-  const getNowPlaying = async () => {
-    const response = await fetch(
-      'https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1&region=KR',
-      options,
-    );
-    const data = await response.json();
-    const results = data.results.filter(
-      (movie) => !movie.genre_ids.includes(27),
-    ); // 호러 장르 제외
-    console.log(results); // 결과 출력
-
-    setNowPlaying(results); // results를 상태에 저장
-  };
-
-  const getData = async () => {
-    await Promise.all([getNowPlaying(), getUpcoming(), getTrending()]);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await getData();
-    setRefreshing(false);
-  };
+  const onRefresh = async () => {};
 
   const renderVMedia = ({ item }) => (
     <VMedia
@@ -109,6 +47,8 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   );
 
   const movieKeyExtractor = (item) => item.id + '';
+
+  const loading = nowPlayingLoading || trendingLoading || upcomingLoading;
 
   return loading ? (
     <Loader>
@@ -131,7 +71,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
               height: SCREEN_HEIGHT / 4,
             }}
           >
-            {nowPlaying.map((movie) => (
+            {nowPlayingData.map((movie) => (
               <Slide
                 key={movie.id}
                 backdropPath={movie.backdrop_path}
@@ -148,7 +88,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingHorizontal: 30 }}
-              data={trending}
+              data={trendingData}
               keyExtractor={movieKeyExtractor}
               ItemSeparatorComponent={VSeparator}
               renderItem={renderVMedia}
@@ -158,7 +98,7 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
           <FlatList
             ItemSeparatorComponent={HSeparator}
             keyExtractor={movieKeyExtractor}
-            data={upcoming}
+            data={upcomingData}
             renderItem={renderHMedia}
           />
         </>
@@ -197,7 +137,7 @@ const VSeparator = styled.View`
 `;
 
 const HSeparator = styled.View`
-  width: 20px;
+  height: 20px;
 `;
 
 export default Movies;
