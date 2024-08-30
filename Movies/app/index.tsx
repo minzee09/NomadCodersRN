@@ -4,13 +4,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
-import {
-  NavigationContainer,
-  DarkTheme,
-  DefaultTheme,
-} from '@react-navigation/native';
-import Tabs from '../navigation/Tabs';
-import Stack from '../navigation/Stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Root from '../navigation/Root';
 import { ThemeProvider } from 'styled-components/native';
 import { darkTheme, lightTheme } from '../styled';
@@ -21,6 +16,7 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
   const isDark = useColorScheme() === 'dark';
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     async function prepare() {
@@ -59,13 +55,15 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        {/* BUG 중첩 오류로 인해 independent 추가하였으나 실제 플젝에서 사용 지양 */}
-        <NavigationContainer independent={true}>
-          <Root />
-        </NavigationContainer>
-      </View>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          {/* BUG 중첩 오류로 인해 independent 추가하였으나 실제 플젝에서 사용 지양 */}
+          <NavigationContainer independent={true}>
+            <Root />
+          </NavigationContainer>
+        </View>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
