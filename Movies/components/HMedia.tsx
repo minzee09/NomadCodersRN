@@ -35,7 +35,6 @@ const HMedia: React.FC<HMediaProps> = ({
 
 const HMovie = styled.View`
   padding: 0 32px;
-  margin-bottom: 16px;
   flex-direction: row;
 `;
 
