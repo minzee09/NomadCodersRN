@@ -19,6 +19,7 @@ export default function Tabs() {
         backgroundColor: isDark ? BLACK_COLOR : 'white',
       }}
       screenOptions={{
+        unmountOnBlur: true, // 다른 탭으로 이동하면 해당 페이지 메모리 삭제 (성능 개선을 위함), 근데 query안쓰고 이걸 쓰면 데이터 다시 fetch함, query는 캐싱(한번 fetch한 데이터를 계속 기억함)을 해줌
         tabBarStyle: {
           backgroundColor: isDark ? BLACK_COLOR : 'white',
         },
