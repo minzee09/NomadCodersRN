@@ -96,65 +96,74 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
       <ActivityIndicator />
     </Loader>
   ) : (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      <Swiper
-        loop
-        timeout={2}
-        controlsEnabled={false}
-        containerStyle={{
-          marginBottom: 32,
-          width: '100%',
-          height: SCREEN_HEIGHT / 4,
-        }}
-      >
-        {nowPlaying.map((movie) => (
-          <Slide
-            key={movie.id}
-            backdropPath={movie.backdrop_path}
-            posterPath={movie.poster_path}
-            originalTitle={movie.original_title}
-            voteAverage={movie.vote_average}
-            overview={movie.overview}
-          />
-        ))}
-      </Swiper>
-      <ListContainer>
-        <ListTitle>Trending Movies</ListTitle>
-        <TrendingScroll
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 30 }}
-          data={trending}
-          keyExtractor={(item) => item.id + ''} // number에서 string으로 변환
-          ItemSeparatorComponent={() => (
-            //마지막 요소 빼고 적용함
-            <View style={{ width: 20 }} />
-          )}
-          renderItem={({ item }) => (
-            <VMedia
-              posterPath={item.poster_path}
-              originalTitle={item.original_title}
-              voteAverage={item.vote_average}
+    <FlatList
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      ListHeaderComponent={
+        //모든 FlatList들을 랜더링하는 역할 | 하지만 리스트의 헤더 역할도 가능함
+        <>
+          <Swiper
+            loop
+            timeout={2}
+            controlsEnabled={false}
+            containerStyle={{
+              marginBottom: 32,
+              width: '100%',
+              height: SCREEN_HEIGHT / 4,
+            }}
+          >
+            {nowPlaying.map((movie) => (
+              <Slide
+                key={movie.id}
+                backdropPath={movie.backdrop_path}
+                posterPath={movie.poster_path}
+                originalTitle={movie.original_title}
+                voteAverage={movie.vote_average}
+                overview={movie.overview}
+              />
+            ))}
+          </Swiper>
+          <ListContainer>
+            <ListTitle>Trending Movies</ListTitle>
+            <TrendingScroll
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 30 }}
+              data={trending}
+              keyExtractor={(item) => item.id + ''} // number에서 string으로 변환
+              ItemSeparatorComponent={() => (
+                //마지막 요소 빼고 적용함
+                <View style={{ width: 20 }} />
+              )}
+              renderItem={({ item }) => (
+                <VMedia
+                  posterPath={item.poster_path}
+                  originalTitle={item.original_title}
+                  voteAverage={item.vote_average}
+                />
+              )}
             />
-          )}
-        />
-      </ListContainer>
-      <ComingSoonTitle>Coming Soon</ComingSoonTitle>
-      {upcoming.map((movie) => (
-        <HMedia
-          key={movie.id}
-          posterPath={movie.poster_path}
-          originalTitle={movie.original_title}
-          releaseDate={movie.release_date}
-          overview={movie.overview}
-        />
-      ))}
-    </ScrollView>
+          </ListContainer>
+          <ComingSoonTitle>Coming Soon</ComingSoonTitle>
+          <FlatList
+            ItemSeparatorComponent={() => (
+              //마지막 요소 빼고 적용함
+              <View style={{ height: 20 }} />
+            )}
+            keyExtractor={(item) => item.id + ''}
+            data={upcoming}
+            renderItem={({ item }) => (
+              <HMedia
+                posterPath={item.poster_path}
+                originalTitle={item.original_title}
+                releaseDate={item.release_date}
+                overview={item.overview}
+              />
+            )}
+          />
+        </>
+      }
+    />
   );
 };
 
@@ -180,7 +189,7 @@ const TrendingScroll = styled.FlatList`
 `;
 
 const ComingSoonTitle = styled(ListTitle)`
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 `;
 
 export default Movies;
