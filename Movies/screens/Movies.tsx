@@ -9,9 +9,7 @@ import {
 import Swiper from 'react-native-web-swiper';
 import styled from 'styled-components/native';
 import Slide from '@/components/Slide';
-import Poster from '@/components/Poster';
 import HMedia from '@/components/HMedia';
-import Votes from '@/components/Votes';
 import VMedia from '@/components/VMedia';
 
 const options = {
