@@ -45,37 +45,62 @@ const filterOutGenre27 = (items) => {
   );
 };
 
-const trending = () => {
-  return fetch(`${BASE_URL}/trending/movie/week?language=en-US`, options)
-    .then((res) => res.json())
-    .then((data) => {
-      //console.log('Trending Data:', data);
-      return filterOutGenre27(data.results);
-    });
+export const moviesApi = {
+  trending: () => {
+    return fetch(`${BASE_URL}/trending/movie/week?language=en-US`, options)
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log('Trending Data:', data);
+        return filterOutGenre27(data.results);
+      });
+  },
+  upcoming: () => {
+    return fetch(
+      `${BASE_URL}/movie/upcoming?language=en-US&page=1&region=KR`,
+      options,
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log('Upcoming Data:', data);
+        return filterOutGenre27(data.results);
+      });
+  },
+  nowPlaying: () => {
+    return fetch(
+      `${BASE_URL}/movie/now_playing?language=en-US&page=1&region=KR`,
+      options,
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log('Now Playing Data:', data);
+        return filterOutGenre27(data.results);
+      });
+  },
 };
 
-const upcoming = () => {
-  return fetch(
-    `${BASE_URL}/movie/upcoming?language=en-US&page=1&region=KR`,
-    options,
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      //console.log('Upcoming Data:', data);
-      return filterOutGenre27(data.results);
-    });
+export const tvApi = {
+  trending: () => {
+    return fetch(`${BASE_URL}/trending/tv/week?language=en-US`, options)
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log('Trending Data:', data);
+        return filterOutGenre27(data.results);
+      });
+  },
+  airingToday: () => {
+    return fetch(`${BASE_URL}/tv/airing_today?language=en-US&page=1`, options)
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log('Trending Data:', data);
+        return filterOutGenre27(data.results);
+      });
+  },
+  topRated: () => {
+    return fetch(`${BASE_URL}/tv/top_rated?language=en-US&page=1`, options)
+      .then((res) => res.json())
+      .then((data) => {
+        //console.log('Trending Data:', data);
+        return filterOutGenre27(data.results);
+      });
+  },
 };
-
-const nowPlaying = () => {
-  return fetch(
-    `${BASE_URL}/movie/now_playing?language=en-US&page=1&region=KR`,
-    options,
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      //console.log('Now Playing Data:', data);
-      return filterOutGenre27(data.results);
-    });
-};
-
-export const moviesApi = { trending, upcoming, nowPlaying };
