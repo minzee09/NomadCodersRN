@@ -3,11 +3,14 @@ import Poster from '@/components/Poster';
 import { makeImgPath } from '@/utilities/utils';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
-import { View, Text, Dimensions, StyleSheet } from 'react-native';
+import { View, Text, Dimensions, StyleSheet, Linking } from 'react-native';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BLACK_COLOR } from '@/colors';
 import { useQuery } from '@tanstack/react-query';
+import Loader from '@/components/Loader';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import * as WebBrowser from 'expo-web-browser';
 
 type RootStackParamList = {
   Detail: Movie | Tv;
@@ -18,23 +21,22 @@ const Detail: React.FC<DetailScreenProps> = ({
   navigation: { setOptions },
   route: { params },
 }) => {
-  const { isLoading: moviesLoading, data: moviesData } = useQuery({
-    queryKey: ['movies', params.id],
-    queryFn: moviesApi.detail,
-    enabled: 'original_title' in params,
+  const isMovie = 'original_title' in params;
+  const { isLoading, data } = useQuery({
+    queryKey: [isMovie ? 'movies' : 'tv', params.id],
+    queryFn: isMovie ? moviesApi.detail : tvApi.detail,
   });
-  const { isLoading: tvLoading, data: tvData } = useQuery({
-    queryKey: ['movies', params.id],
-    queryFn: tvApi.detail,
-    enabled: 'original_name' in params,
-  });
-  console.log('movies', moviesData);
-  console.log('tv', tvData);
+
   useEffect(() => {
     setOptions({
       title: 'original_title' in params ? 'Movie' : 'Tv Show',
     });
   }, []);
+  const openYTLink = async (videoID: string) => {
+    const baseUrl = `http://m.youtube.com/watch?v=${videoID}`;
+    // await Linking.openURL(baseUrl); // 외부 브라우저 혹은 유튜브 앱으로 이동
+    await WebBrowser.openBrowserAsync(baseUrl); // 앱 내 브라우저로 사용
+  };
   return (
     <Container>
       <Header>
@@ -55,7 +57,16 @@ const Detail: React.FC<DetailScreenProps> = ({
           </Title>
         </Column>
       </Header>
-      <Overview>{params.overview}</Overview>
+      <Data>
+        <Overview>{params.overview}</Overview>
+        {isLoading ? <Loader /> : null}
+        {data?.videos?.results?.map((video) => (
+          <VideoBtn key={video.key} onPress={() => openYTLink(video.key)}>
+            <Ionicons name="logo-youtube" color="white" size={24} />
+            <BtnText>{video.name}</BtnText>
+          </VideoBtn>
+        ))}
+      </Data>
     </Container>
   );
 };
@@ -87,10 +98,25 @@ const Title = styled.Text`
   font-weight: 500;
 `;
 
+const Data = styled.View`
+  padding: 0 20px;
+`;
+
 const Overview = styled.Text`
   color: ${(props) => props.theme.textColor};
-  margin-top: 20px;
-  padding: 0 20px;
+  margin: 20px 0;
+`;
+
+const VideoBtn = styled.TouchableOpacity`
+  flex-direction: row;
+`;
+
+const BtnText = styled.Text`
+  color: white;
+  font-weight: 500;
+  margin-bottom: 12px;
+  line-height: 24px;
+  margin-left: 12px;
 `;
 
 export default Detail;
