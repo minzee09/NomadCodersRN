@@ -76,6 +76,13 @@ export const moviesApi = {
         return filterOutGenre27(data.results);
       });
   },
+  search: ({ queryKey }) => {
+    const [_, query] = queryKey; // 배열에서 첫 번째 item 무시하고 두 번째 item 불러오기
+    return fetch(
+      `${BASE_URL}/search/movie?query=${query}&include_adult=false&language=en-US&page=1`,
+      options,
+    ).then((res) => res.json());
+  },
 };
 
 export const tvApi = {
@@ -102,5 +109,12 @@ export const tvApi = {
         //console.log('Trending Data:', data);
         return filterOutGenre27(data.results);
       });
+  },
+  search: ({ queryKey }) => {
+    const [_, query] = queryKey;
+    return fetch(
+      `${BASE_URL}/search/tv?query=${query}&include_adult=false&language=en-US&page=1`,
+      options,
+    ).then((res) => res.json());
   },
 };
