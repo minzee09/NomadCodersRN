@@ -75,9 +75,9 @@ export const moviesApi = {
         return filterOutGenre27(data.results);
       });
   },
-  upcoming: () => {
+  upcoming: ({ pageParam }) => {
     return fetch(
-      `${BASE_URL}/movie/upcoming?language=en-US&page=1&region=KR`,
+      `${BASE_URL}/movie/upcoming?language=en-US&page=${pageParam}&region=KR`,
       options,
     )
       .then((res) => res.json())

@@ -6,7 +6,11 @@ import styled from 'styled-components/native';
 import Slide from '@/components/Slide';
 import HMedia from '@/components/HMedia';
 import VMedia from '@/components/VMedia';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { Movie, MovieResponse, moviesApi } from '@/api';
 import Loader from '@/components/Loader';
 import HList from '@/components/HList';
@@ -38,11 +42,19 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   const {
     isLoading: upcomingLoading,
     data: upcomingData,
+    hasNextPage,
+    fetchNextPage,
     isRefetching: isRefetchingUpcoming,
-  } = useQuery<MovieResponse>({
+  } = useInfiniteQuery<MovieResponse>({
     queryKey: ['movies', 'upcoming'],
-    queryFn: moviesApi.upcoming,
+    queryFn: ({ pageParam = 1 }) => moviesApi.upcoming(pageParam),
+    getNextPageParam: (currentPage) => {
+      const nextPage = currentPage.page + 1;
+      return nextPage <= currentPage.total_pages ? nextPage : undefined;
+    },
+    initialPageParam: 1,
   });
+  console.log(upcomingData);
 
   const onRefresh = async () => {
     setRefresh(true);
@@ -73,10 +85,18 @@ const Movies: React.FC<NativeStackScreenProps<any, 'Movies'>> = () => {
   //   );
   // }
 
+  const loadMore = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
+
   return loading ? (
     <Loader />
   ) : upcomingData ? (
     <FlatList
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.5} // 끝지점 거리 조절
       refreshing={refresh}
       onRefresh={onRefresh}
       ListHeaderComponent={

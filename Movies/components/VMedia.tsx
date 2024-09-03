@@ -4,7 +4,7 @@ import Poster from './Poster';
 import Votes from './Votes';
 import { useNavigation } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
-import { Movie } from '@/api';
+import { Movie, TV } from '@/api';
 
 interface VMediaProps {
   posterPath: string;

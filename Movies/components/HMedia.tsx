@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components/native';
 import Poster from './Poster';
 import { TouchableOpacity } from 'react-native';
@@ -78,4 +78,4 @@ const Release = styled.Text`
   margin: 8px 0;
 `;
 
-export default HMedia;
+export default memo(HMedia);
