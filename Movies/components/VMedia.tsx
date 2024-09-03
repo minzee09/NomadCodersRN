@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components/native';
 import Poster from './Poster';
 import Votes from './Votes';
+import { useNavigation } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
 
 interface VMediaProps {
   posterPath: string;
@@ -14,15 +16,22 @@ const VMedia: React.FC<VMediaProps> = ({
   originalTitle,
   voteAverage,
 }) => {
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate('Stack', { screen: 'Detail' });
+  };
+
   return (
-    <Movie>
-      <Poster path={posterPath} />
-      <Title>
-        {originalTitle.slice(0, 12)}
-        {originalTitle.length > 12 ? '...' : null}
-      </Title>
-      <Votes voteAverage={voteAverage} />
-    </Movie>
+    <TouchableOpacity onPress={goToDetail}>
+      <Movie>
+        <Poster path={posterPath} />
+        <Title>
+          {originalTitle.slice(0, 12)}
+          {originalTitle.length > 12 ? '...' : null}
+        </Title>
+        <Votes voteAverage={voteAverage} />
+      </Movie>
+    </TouchableOpacity>
   );
 };
 

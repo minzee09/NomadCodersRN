@@ -1,10 +1,17 @@
 import { makeImgPath } from '@/utilities/utils';
 import { BlurView } from 'expo-blur';
 import React from 'react';
-import { StyleSheet, useColorScheme, View } from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  useColorScheme,
+  View,
+} from 'react-native';
 import styled from 'styled-components/native';
 import Poster from './Poster';
 import Votes from './Votes';
+import { useNavigation } from 'expo-router';
 
 interface SlideProps {
   backdropPath: string;
@@ -22,29 +29,36 @@ const Slide: React.FC<SlideProps> = ({
   overview,
 }) => {
   const isDark = useColorScheme() === 'dark';
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate('Stack', { screen: 'Detail' });
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-      <BgImg
-        source={{ uri: makeImgPath(backdropPath) }}
-        blurRadius={5}
-        style={StyleSheet.absoluteFill} // width: 100%, height: 100%, position: absolute과 동일함
-      />
-      <BlurView
-        tint={isDark ? 'dark' : 'light'}
-        experimentalBlurMethod="none"
-        style={StyleSheet.absoluteFill}
-      >
-        <Wrapper>
-          <Poster path={posterPath} />
-          <Column>
-            <Title>{originalTitle}</Title>
-            <Votes voteAverage={voteAverage} />
-            <Overview>{overview.slice(0, 100)}...</Overview>
-          </Column>
-        </Wrapper>
-      </BlurView>
-    </View>
+    // 사용자가 클릭했을 때 투명도 조정이 없음
+    <TouchableWithoutFeedback onPress={goToDetail}>
+      <View style={{ flex: 1 }}>
+        <BgImg
+          source={{ uri: makeImgPath(backdropPath) }}
+          blurRadius={5}
+          style={StyleSheet.absoluteFill} // width: 100%, height: 100%, position: absolute과 동일함
+        />
+        <BlurView
+          tint={isDark ? 'dark' : 'light'}
+          experimentalBlurMethod="none"
+          style={StyleSheet.absoluteFill}
+        >
+          <Wrapper>
+            <Poster path={posterPath} />
+            <Column>
+              <Title>{originalTitle}</Title>
+              <Votes voteAverage={voteAverage} />
+              <Overview>{overview.slice(0, 100)}...</Overview>
+            </Column>
+          </Wrapper>
+        </BlurView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
