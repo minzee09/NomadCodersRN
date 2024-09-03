@@ -26,6 +26,23 @@ export interface Movie {
   vote_count: number;
 }
 
+export interface TV {
+  name: string;
+  original_name: string;
+  origin_country: string[];
+  vote_count: number;
+  backdrop_path: string | null;
+  vote_average: number;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  overview: string;
+  poster_path: string | null;
+  first_air_date: string;
+  popularity: number;
+  media_type: string;
+}
+
 interface BaseResponse {
   page: number;
   total_pages: number;
@@ -34,6 +51,10 @@ interface BaseResponse {
 
 export interface MovieResponse extends BaseResponse {
   results: Movie[];
+}
+
+export interface TVResponse extends BaseResponse {
+  results: TV[];
 }
 
 const filterOutGenre27 = (items) => {
@@ -86,7 +107,7 @@ export const moviesApi = {
   detail: ({ queryKey }) => {
     const [_, id] = queryKey; // 배열에서 첫 번째 item 무시하고 두 번째 item 불러오기
     return fetch(
-      `${BASE_URL}/movie/${id}?append_to_response=${''}&language=en-US`,
+      `${BASE_URL}/movie/${id}?append_to_response=videos,images&language=en-US`,
       options,
     ).then((res) => res.json());
   },
@@ -127,7 +148,7 @@ export const tvApi = {
   detail: ({ queryKey }) => {
     const [_, id] = queryKey; // 배열에서 첫 번째 item 무시하고 두 번째 item 불러오기
     return fetch(
-      `${BASE_URL}/tv/${id}?append_to_response=${''}&language=en-US`,
+      `${BASE_URL}/tv/${id}?append_to_response=videos,images&language=en-US`,
       options,
     ).then((res) => res.json());
   },
