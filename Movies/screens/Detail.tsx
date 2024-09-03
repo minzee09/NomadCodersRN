@@ -1,9 +1,19 @@
-import { Movie, moviesApi, tvApi } from '@/api';
+import { Movie, TV, moviesApi, tvApi } from '@/api';
 import Poster from '@/components/Poster';
 import { makeImgPath } from '@/utilities/utils';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect } from 'react';
-import { View, Text, Dimensions, StyleSheet, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  Dimensions,
+  StyleSheet,
+  Linking,
+  Touchable,
+  Share,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BLACK_COLOR } from '@/colors';
@@ -13,7 +23,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as WebBrowser from 'expo-web-browser';
 
 type RootStackParamList = {
-  Detail: Movie | Tv;
+  Detail: Movie | TV;
 };
 type DetailScreenProps = NativeStackScreenProps<RootStackParamList, 'Detail'>;
 
@@ -21,6 +31,34 @@ const Detail: React.FC<DetailScreenProps> = ({
   navigation: { setOptions },
   route: { params },
 }) => {
+  const shareMedia = async () => {
+    const isAndroid = Platform.OS === 'android';
+    const homepage = isMovie
+      ? `https://www.imdb.com/title/${data.imdb_id}`
+      : data.homepage;
+    if (isAndroid) {
+      await Share.share({
+        title:
+          'original_title' in params
+            ? params.original_title
+            : params.original_name,
+        message: `${params.overview}\nCheck it Out! ${homepage}`,
+      });
+    } else {
+      await Share.share({
+        title:
+          'original_title' in params
+            ? params.original_title
+            : params.original_name,
+        url: homepage,
+      });
+    }
+  };
+  const ShareButton = () => (
+    <TouchableOpacity onPress={shareMedia}>
+      <Ionicons name="share-outline" color="white" size={24} />
+    </TouchableOpacity>
+  );
   const isMovie = 'original_title' in params;
   const { isLoading, data } = useQuery({
     queryKey: [isMovie ? 'movies' : 'tv', params.id],
@@ -30,8 +68,18 @@ const Detail: React.FC<DetailScreenProps> = ({
   useEffect(() => {
     setOptions({
       title: 'original_title' in params ? 'Movie' : 'Tv Show',
+      headerRight: () => <ShareButton />,
+      headerTitleAlign: 'center',
     });
   }, []);
+  useEffect(() => {
+    if (data) {
+      setOptions({
+        headerRight: () => <ShareButton />,
+      });
+    }
+  }, [data]);
+
   const openYTLink = async (videoID: string) => {
     const baseUrl = `http://m.youtube.com/watch?v=${videoID}`;
     // await Linking.openURL(baseUrl); // 외부 브라우저 혹은 유튜브 앱으로 이동
