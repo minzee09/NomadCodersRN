@@ -83,6 +83,13 @@ export const moviesApi = {
       options,
     ).then((res) => res.json());
   },
+  detail: ({ queryKey }) => {
+    const [_, id] = queryKey; // 배열에서 첫 번째 item 무시하고 두 번째 item 불러오기
+    return fetch(
+      `${BASE_URL}/movie/${id}?append_to_response=${''}&language=en-US`,
+      options,
+    ).then((res) => res.json());
+  },
 };
 
 export const tvApi = {
@@ -114,6 +121,13 @@ export const tvApi = {
     const [_, query] = queryKey;
     return fetch(
       `${BASE_URL}/search/tv?query=${query}&include_adult=false&language=en-US&page=1`,
+      options,
+    ).then((res) => res.json());
+  },
+  detail: ({ queryKey }) => {
+    const [_, id] = queryKey; // 배열에서 첫 번째 item 무시하고 두 번째 item 불러오기
+    return fetch(
+      `${BASE_URL}/tv/${id}?append_to_response=${''}&language=en-US`,
       options,
     ).then((res) => res.json());
   },
