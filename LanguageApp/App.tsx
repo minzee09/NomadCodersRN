@@ -54,7 +54,16 @@ const App: React.FC = () => {
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true, // touch 감지
+      onPanResponderGrant: () => {
+        console.log("Touch Started");
+        // 마지막으로 놓인 위치에서 시작하도록
+        POSITION.setOffset({
+          x: POSITION.x._value, // number로 지정하기 위해
+          y: POSITION.y._value,
+        });
+      },
       onPanResponderMove: (_, { dx, dy }) => {
+        console.log("Touching");
         // 움직임에 대한 정보를 받을 수 있음
         POSITION.setValue({
           x: dx,
@@ -62,14 +71,8 @@ const App: React.FC = () => {
         });
       },
       onPanResponderRelease: () => {
-        // 놓았을 때
-        Animated.spring(POSITION, {
-          toValue: {
-            x: 0,
-            y: 0,
-          },
-          useNativeDriver: false,
-        }).start();
+        console.log("Touch Finished");
+        POSITION.flattenOffset(); // offSet을 다시 0으로 초기화
       },
     }),
   ).current;
