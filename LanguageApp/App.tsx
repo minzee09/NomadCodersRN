@@ -1,13 +1,11 @@
 import React, { useRef, useState } from "react";
-import { Animated, Dimensions, TouchableOpacity } from "react-native";
+import { Animated, Dimensions, PanResponder } from "react-native";
 import styled from "styled-components/native";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const App: React.FC = () => {
-  const POSITION = useRef(
-    new Animated.ValueXY({ x: -SCREEN_WIDTH / 2 + 100, y: -SCREEN_HEIGHT / 2 + 100 }),
-  ).current; // useRef: 다시 렌더링이 일어나더라도 value를 유지하게 해줌, rerender하더라도 값이 초기값으로 돌아가지 않음.
+  const POSITION = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current; // useRef: 다시 렌더링이 일어나더라도 value를 유지하게 해줌, rerender하더라도 값이 초기값으로 돌아가지 않음.
   const topLeft = Animated.timing(POSITION, {
     toValue: {
       x: -SCREEN_WIDTH / 2 + 100,
@@ -36,9 +34,6 @@ const App: React.FC = () => {
     },
     useNativeDriver: false, // bg색 에니메이션 주려면 false로 해야 적용 됨
   });
-  const moveUp = () => {
-    Animated.loop(Animated.sequence([bottomLeft, bottomRight, topRight, topLeft])).start();
-  };
   // Interpolation
   const opacityValue = POSITION.y.interpolate({
     inputRange: [-300, 0, 300],
@@ -56,19 +51,40 @@ const App: React.FC = () => {
     inputRange: [-300, 300],
     outputRange: ["rgb(255,99,71)", "rgb(71,166,255)"],
   });
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true, // touch 감지
+      onPanResponderMove: (_, { dx, dy }) => {
+        // 움직임에 대한 정보를 받을 수 있음
+        POSITION.setValue({
+          x: dx,
+          y: dy,
+        });
+      },
+      onPanResponderRelease: () => {
+        // 놓았을 때
+        Animated.spring(POSITION, {
+          toValue: {
+            x: 0,
+            y: 0,
+          },
+          useNativeDriver: false,
+        }).start();
+      },
+    }),
+  ).current;
   return (
     <Container>
-      <TouchableOpacity onPress={moveUp}>
-        <AnimatedBox
-          style={{
-            borderRadius: borderRadius,
-            backgroundColor: bgColor,
-            transform: [
-              ...POSITION.getTranslateTransform(), // 이거랑 같음 { translateY: POSITION.y },{ translateX: POSITION.x }
-            ],
-          }}
-        />
-      </TouchableOpacity>
+      <AnimatedBox
+        {...panResponder.panHandlers} // function 제공 받기 위해, panHandlers는 그냥 함수 묶음
+        style={{
+          borderRadius: borderRadius,
+          backgroundColor: bgColor,
+          transform: [
+            ...POSITION.getTranslateTransform(), // 이거랑 같음 { translateY: POSITION.y },{ translateX: POSITION.x }
+          ],
+        }}
+      />
     </Container>
   );
 };
